@@ -60,7 +60,7 @@ function viewTask(id?: string) {
           @click="viewTask(task.id)"
         >
           <div class="card-body">
-            <h5 class="card-title text-primary">{{ task.name }}</h5>
+            <h5 class="card-title text-primary">{{ task.name || 'Task' }}</h5>
             <small>{{ task.board.name }}</small>
 
             <p class="mt-3 card-text text-truncate">
