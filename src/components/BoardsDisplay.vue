@@ -21,7 +21,7 @@ async function fetchBoards() {
 </script>
 
 <template>
-  <div class="flex-fill d-flex flex-column">
+  <div class="flex-fill col col-md-6">
     <div class="d-flex align-items-center justify-content-between">
       <div>
         <h4>Your Boards</h4>
@@ -51,12 +51,11 @@ async function fetchBoards() {
           View All
           <ChevronRightIcon class="ms-2" style="width: 1rem; height: 1rem" />
         </span>
-        <div class="d-flex flex-column justify-content-center gap-3 align-items-center">
+        <div class="d-flex flex-column gap-3">
           <template v-for="board in boards" :key="board.id">
             <router-link
               :to="{ name: 'View Board', params: { id: board.id } }"
-              class="text-decoration-none"
-              style="width: 18rem"
+              class="text-decoration-none w-100 d-block"
             >
               <div class="card h-100 shadow-sm">
                 <div class="card-body">

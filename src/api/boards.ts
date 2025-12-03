@@ -65,7 +65,7 @@ async function updateBoard(board: Board, signal?: AbortSignal): Promise<Board | 
 
 async function inviteMember(boardId: string, members: User[]): Promise<Board | ApiError> {
   try {
-    const response = await fetchApi(PUT(`/boards/${boardId}/invite`, members))
+    const response = await fetchApi(PUT(`/boards/${boardId}/members`, members))
     const data = await response.json()
 
     if (!response.ok) return { error: data.error } as ApiError

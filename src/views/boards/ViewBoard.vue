@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { deleteBoard, getBoard, updateBoard } from '@/api/boards'
+import { deleteBoard, getBoard, inviteMember, updateBoard } from '@/api/boards'
+import { getUsers } from '@/api/users'
 import TaskCard from '@/components/TaskCard.vue'
 import ViewTask from '@/components/ViewTask.vue'
 import { debounce, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import type { Task } from '@/models/tasks'
+import type { User } from '@/models/users'
 import { TrashIcon } from '@heroicons/vue/24/solid'
 import { Modal } from 'bootstrap'
 import { onMounted, ref, watch } from 'vue'
@@ -12,8 +14,26 @@ import { useRoute, useRouter } from 'vue-router'
 
 onMounted(() => {
   fetchBoard()
+  fetchUsers()
   debouncedSave.value = debounce(submitBoard, 500)
 })
+
+const users = ref<User[]>([])
+const showMenu = ref(false)
+async function fetchUsers() {
+  const response = await getUsers()
+  if (isError(response)) return
+
+  users.value = response
+}
+
+async function addMember(user: User) {
+  const response = await inviteMember(board.value.id!, [user])
+  if (isError(response)) return
+
+  showMenu.value = false
+  router.go(0)
+}
 
 const route = useRoute()
 const router = useRouter()
@@ -61,7 +81,7 @@ async function removeBoard() {
 }
 
 function addTask() {
-  tasks.value.push({ name: '', board: board.value.id!, comments: [] })
+  tasks.value.push({ name: '', status: 'To-Do', board: board.value.id!, comments: [] })
 }
 
 function removeTask(index: number) {
@@ -81,8 +101,8 @@ function viewTask(taskId?: string) {
 </script>
 
 <template>
-  <section id="board--view" class="section">
-    <div class="my-4 d-flex flex-column flex-md-row align-items-center gap-3 w-100">
+  <section id="board--view" class="section align-items-start">
+    <div class="my-4 d-flex gap-3 w-100">
       <div class="flex-fill">
         <label for="name" hidden>Name</label>
         <input
@@ -95,7 +115,7 @@ function viewTask(taskId?: string) {
       <TrashIcon class="text-danger ms-3" style="width: 1.5rem; height: 1.5rem; cursor: pointer" @click="removeBoard" />
     </div>
     <div class="mb-4 w-100">
-      <label for="description" hidden>Description</label>
+      <label for="description"><small>Description</small></label>
       <textarea
         id="description"
         class="form-control-plaintext"
@@ -121,19 +141,28 @@ function viewTask(taskId?: string) {
       </span>
     </div>
 
-    <div class="d-flex flex-column flex-md-row gap-3 mt-4">
-      <button
-        class="btn btn-outline-primary px-3"
-        @click="
-          $router.push({
-            name: 'Edit Board',
-            params: { id: board.id },
-            query: { tab: 'members' },
-          })
-        "
-      >
-        Add Members
-      </button>
+    <div class="d-flex flex-wrap gap-3 mt-4">
+      <div class="dropdown">
+        <button
+          class="btn btn-outline-primary px-3"
+          @click="showMenu = !showMenu"
+        >
+          Add Members
+        </button>
+
+        <ul class="dropdown-menu show" v-if="showMenu" style="display:block; position:absolute;">
+          <li
+            v-for="user in users"
+            :key="user.id"
+            class="dropdown-item"
+            @click="addMember(user)"
+            style="cursor: pointer;"
+          >
+            {{ user.username }}
+          </li>
+        </ul>
+      </div>
+
       <button class="btn btn-primary px-3" @click="addTask">Add New Task</button>
     </div>
 
@@ -141,7 +170,7 @@ function viewTask(taskId?: string) {
       isSaving ? 'Saving changes..' : 'Saved!'
     }}</small:>
 
-    <div class="card w-100 p-5" style="max-height: 500px; overflow-y: auto">
+    <div class="card w-100 p-2 p-md-5" style="max-height: 500px; overflow-y: auto">
       <div class="card-body">
         <div v-if="tasks.length === 0" class="text-center">
           <img src="@/helpers/no-data.avif" alt="No Tasks" class="mb-4" style="max-width: 300px" />
