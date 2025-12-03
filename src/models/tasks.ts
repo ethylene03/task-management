@@ -4,6 +4,7 @@ import type { User } from './users'
 
 export interface Task {
   id?: string
+  status: 'To-Do' | 'Ongoing' | 'Done'
   name: string
   description?: string
   board: string

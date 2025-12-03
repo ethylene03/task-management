@@ -57,7 +57,7 @@ async function submitComment() {
       <div class="modal-content">
         <div class="modal-header border-bottom-0 px-4">
           <div>
-            <h1 class="modal-title fs-5">{{ task.name }}</h1>
+            <h1 class="modal-title fs-5">{{ task.name || 'Task' }}</h1>
             <small class="text-muted">{{ task.board?.name }}</small>
           </div>
           <button
@@ -67,10 +67,23 @@ async function submitComment() {
             aria-label="Close"
           ></button>
         </div>
-        <div class="modal-body py-4">
+        <div class="modal-body pb-4 pt-0">
+          <span
+            class="badge border border-1 mb-2 me-3"
+            :class="{
+              'bg-warning-subtle text-warning': task.status === 'To-Do',
+              'bg-info-subtle text-info': task.status === 'Ongoing',
+              'bg-success-subtle text-success': task.status === 'Done',
+            }"
+          >
+            {{ task.status }}
+          </span>
+          <span class="badge border border-1 mb-2 me-3 bg-primary-subtle text-primary">
+            @{{ task.assignee?.username }}
+          </span>
           <div class="mb-3">
             <small class="text-muted">Description</small>
-            <p class="card w-100 px-3 py-2" style="height: 10rem; overflow-y: auto">
+            <p class="w-100 px-3 py-2" style="max-height: 10rem; overflow-y: auto">
               {{ task.description || 'No Description' }}
             </p>
           </div>

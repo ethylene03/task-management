@@ -55,15 +55,18 @@ async function removeTask() {
   await deleteTask(savedTasks.value?.id as string)
   emit('delete')
 }
+
+const showMenu = ref(false)
+const statusList: ('To-Do' | 'Ongoing' | 'Done')[] = ['To-Do', 'Ongoing', 'Done']
+function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
+  taskCopy.value.status = status
+  showMenu.value = false
+}
 </script>
 
 <template>
-  <form
-    class="card p-3 h-100 shadow-sm"
-    :class="{ 'cursor-pointer': savedTasks?.id }"
-    style="max-width: 18rem"
-  >
-    <div class="d-flex align-items-center justify-contetn-between mb-2">
+  <form class="card p-3 h-100 shadow-sm" :class="{ 'cursor-pointer': savedTasks?.id }">
+    <div class="d-flex align-items-center justify-content-between">
       <label for="name" class="form-text" hidden>Task Name</label>
       <input
         id="name"
@@ -80,6 +83,38 @@ async function removeTask() {
         @click="removeTask"
       />
     </div>
+
+    <div class="dropdown mb-2">
+      <span
+        class="badge border border-1 mb-2 me-3"
+        :class="{
+          'bg-warning-subtle text-warning': taskCopy.status === 'To-Do',
+          'bg-info-subtle text-info': taskCopy.status === 'Ongoing',
+          'bg-success-subtle text-success': taskCopy.status === 'Done',
+        }"
+        @click.stop
+        @click="showMenu = !showMenu"
+      >
+        {{ taskCopy.status }}
+      </span>
+      <ul
+        class="dropdown-menu show"
+        v-if="showMenu"
+        style="display: block; position: absolute"
+        @click.stop
+      >
+        <li
+          v-for="(status, index) in statusList"
+          :key="index"
+          class="dropdown-item"
+          @click="setStatus(status)"
+          style="cursor: pointer"
+        >
+          {{ status }}
+        </li>
+      </ul>
+    </div>
+
     <div class="mb-2">
       <label for="description" class="form-text" hidden>Description</label>
       <input
@@ -89,6 +124,7 @@ async function removeTask() {
         @click.stop
       />
     </div>
+
     <div class="mb-2">
       <label for="assignee" class="form-text">Assignee</label>
       <select id="assignee" class="form-select" v-model="taskCopy.assignee" @click.stop>
@@ -103,6 +139,7 @@ async function removeTask() {
         </option>
       </select>
     </div>
+
     <small :class="{ 'text-muted': isSaving, 'text-white': !isSaving }">{{
       isSaving ? 'Saving changes..' : 'Saved!'
     }}</small>
