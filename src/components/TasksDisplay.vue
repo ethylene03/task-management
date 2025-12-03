@@ -6,6 +6,8 @@ import type { Board } from '@/models/boards'
 import type { TaskWithBoard } from '@/models/tasks'
 import { ChevronRightIcon } from '@heroicons/vue/24/solid'
 import { onMounted, ref } from 'vue'
+import ViewTask from './ViewTask.vue'
+import { Modal } from 'bootstrap'
 
 onMounted(() => {
   fetchTasks()
@@ -27,10 +29,19 @@ async function fetchTasks() {
     }),
   )
 }
+
+function viewTask(id?: string) {
+  if (!id) return
+  const modal = document.getElementById('modal--view-' + id)
+  if (modal) {
+    const modalInstance = new Modal(modal as HTMLElement)
+    modalInstance.show()
+  }
+}
 </script>
 
 <template>
-  <div class="flex-fill d-flex flex-column">
+  <div class="flex-fill col col-md-6">
     <div>
       <h4>Your Tasks</h4>
       <span class="text-muted">Total Tasks: {{ tasks.length || 0 }}</span>
@@ -51,11 +62,11 @@ async function fetchTasks() {
           View All
           <ChevronRightIcon class="ms-2" style="width: 1rem; height: 1rem" />
         </span>
-        <div class="d-flex flex-column justify-content-center gap-3 align-items-center">
+        <div class="d-flex flex-column gap-3">
           <div v-for="task in tasks" :key="task.id">
-            <div class="card h-100 shadow-sm" style="width: 18rem">
+            <div class="w-100 card h-100 shadow-sm cursor-pointer" @click="viewTask(task.id)">
               <div class="card-body">
-                <h5 class="card-title text-primary">{{ task.name }}</h5>
+                <h5 class="card-title text-primary">{{ task.name || 'Task' }}</h5>
                 <p class="card-text text-truncate">
                   {{ task.description }}
                 </p>
@@ -64,6 +75,7 @@ async function fetchTasks() {
                 </div>
               </div>
             </div>
+            <ViewTask :taskId="task.id" />
           </div>
         </div>
       </div>
