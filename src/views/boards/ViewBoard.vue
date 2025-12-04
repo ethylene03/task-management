@@ -85,7 +85,8 @@ function addTask() {
   tasks.value.push({ name: '', status: 'To-Do', board: board.value.id!, comments: [] })
 }
 
-function removeTask(index: number) {
+function removeTask(task: Task, index: number) {
+  console.log(task, index)
   tasks.value = tasks.value.filter((_, i) => i !== index)
 }
 
@@ -171,20 +172,18 @@ function viewTask(taskId?: string) {
       isSaving ? 'Saving changes..' : 'Saved!'
     }}</small:>
 
-    <div class="card w-100 p-2 p-md-5" style="max-height: 500px; overflow-y: auto">
-      <div class="card-body">
+    <div id="view-board--task" class="card w-100 p-2 p-md-5" style="max-height: 500px; overflow-y: auto">
+      <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
 
         <div v-else class="d-flex flex-wrap gap-3 justify-content-between">
           <div v-for="(task, index) in tasks" :key="task.id" class="flex-fill">
             <TaskCard
               :task="task"
               :board="board"
-              @delete="removeTask(index)"
+            @delete="removeTask(task, index)"
               @click="viewTask(task.id)"
             />
             <TaskModal :taskId="task.id" />
-          </div>
-      <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
         </div>
       </div>
     </div>

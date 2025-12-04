@@ -4,6 +4,7 @@ import { onMounted, ref, watch } from 'vue'
 const isClicked = ref<boolean>(false)
 
 const emit = defineEmits<{ (event: 'delete'): void }>()
+const { id } = defineProps<{ id: string }>()
 
 watch(isClicked, () => {
   if (isClicked.value) emit('delete')
@@ -18,7 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="modal fade" id="modal--delete" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" :id="'modal--delete-' + id" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header border-bottom-0">

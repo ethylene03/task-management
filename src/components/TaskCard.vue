@@ -4,7 +4,9 @@ import { debounce, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import type { Task, TaskWithBoard } from '@/models/tasks'
 import { TrashIcon } from '@heroicons/vue/24/solid'
+import { Modal } from 'bootstrap'
 import { onMounted, ref, watch } from 'vue'
+import DeleteModal from './DeleteModal.vue'
 
 onMounted(() => {
   debouncedSave.value = debounce(handleSubmit, 500)
@@ -52,8 +54,30 @@ async function handleSubmit() {
 
 const emit = defineEmits(['delete'])
 async function removeTask() {
-  await deleteTask(savedTasks.value?.id as string)
+  if (savedTasks.value?.id) {
+    await deleteTask(savedTasks.value?.id as string)
+    const modal = document.getElementById('modal--delete-' + savedTasks.value?.id)
+    if (modal) {
+      const bootstrapModal = Modal.getInstance(modal as HTMLElement)
+      bootstrapModal?.hide()
+    }
+  }
+
   emit('delete')
+}
+
+function showDeleteModal() {
+  console.log('Saved Task ID:', savedTasks.value?.id)
+  if (!savedTasks.value?.id) {
+    removeTask()
+    return
+  }
+
+  const modal = document.getElementById('modal--delete-' + savedTasks.value?.id)
+  if (modal) {
+    const bootstrapModal = new Modal(modal as HTMLElement)
+    bootstrapModal.show()
+  }
 }
 
 const showMenu = ref(false)
@@ -65,8 +89,8 @@ function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
 </script>
 
 <template>
-  <form class="card p-3 h-100 shadow-sm" :class="{ 'cursor-pointer': savedTasks?.id }">
-    <div class="d-flex align-items-center justify-content-between">
+  <div class="card p-3 h-100 shadow-sm" :class="{ 'cursor-pointer': savedTasks?.id }">
+    <div id="task-card--header" class="d-flex align-items-center justify-content-between">
       <label for="name" class="form-text" hidden>Task Name</label>
       <input
         id="name"
@@ -80,11 +104,12 @@ function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
         class="text-danger float-end"
         style="width: 1.5rem; height: 1.5rem; cursor: pointer"
         @click.stop
-        @click="removeTask"
+        @click="showDeleteModal"
       />
+      <DeleteModal :id="savedTasks?.id || ''" @delete="removeTask" @click.stop />
     </div>
 
-    <div class="dropdown mb-2">
+    <div id="task-card--status" class="dropdown mb-2">
       <span
         class="badge border border-1 mb-2 me-3"
         :class="{
@@ -97,7 +122,9 @@ function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
       >
         {{ taskCopy.status }}
       </span>
+
       <ul
+        id="task-card--status-menu"
         class="dropdown-menu show"
         v-if="showMenu"
         style="display: block; position: absolute"
@@ -115,18 +142,20 @@ function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
       </ul>
     </div>
 
-    <div class="mb-2">
+    <div id="task-card--description" class="mb-2">
       <label for="description" class="form-text" hidden>Description</label>
-      <input
+      <textarea
         class="form-control-plaintext mb-2"
         v-model="taskCopy.description"
         placeholder="Task Description"
+        rows="3"
+        style="resize: none; scroll-behavior: smooth"
         @click.stop
-      />
+      ></textarea>
     </div>
 
-    <div class="mb-2">
-      <label for="assignee" class="form-text">Assignee</label>
+    <div id="task-card--assignee" class="mb-2">
+      <label for="assignee" class="form-text">Assigned To</label>
       <select id="assignee" class="form-select" v-model="taskCopy.assignee" @click.stop>
         <option v-if="!taskCopy.assignee" :value="null" hidden>Unassigned</option>
         <option
@@ -143,5 +172,5 @@ function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
     <small :class="{ 'text-muted': isSaving, 'text-white': !isSaving }">{{
       isSaving ? 'Saving changes..' : 'Saved!'
     }}</small>
-  </form>
+  </div>
 </template>

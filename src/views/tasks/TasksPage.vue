@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { getBoard } from '@/api/boards'
 import { getTasks } from '@/api/tasks'
-import ViewTask from '@/components/ViewTask.vue'
 import NoData from '@/components/NoData.vue'
+import TaskCard from '@/components/TaskCard.vue'
 import TaskModal from '@/components/TaskModal.vue'
 import { isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
@@ -35,6 +35,10 @@ function viewTask(id?: string) {
     modalInstance.show()
   }
 }
+
+function removeTask(index: number) {
+  tasks.value = tasks.value.filter((_, i) => i !== index)
+}
 </script>
 
 <template>
@@ -52,21 +56,13 @@ function viewTask(id?: string) {
     >
       <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
 
-      <div v-else v-for="task in tasks" :key="task.id" class="flex-fill" style="max-width: 18rem">
-        <div
-          class="card h-100 shadow-sm task--card cursor-pointer"
-          style="min-width: 18rem"
+      <div v-else v-for="(task, index) in tasks" :key="task.id" class="flex-fill">
+        <TaskCard
+          :task="{ ...task, board: task.board.id || '' }"
+          :board="task.board"
+          @delete="removeTask(index)"
           @click="viewTask(task.id)"
-        >
-          <div class="card-body">
-            <h5 class="card-title text-primary">{{ task.name || 'Task' }}</h5>
-            <small>{{ task.board.name }}</small>
-
-            <p class="mt-3 card-text text-truncate">
-              {{ task.description }}
-            </p>
-          </div>
-        </div>
+        />
         <TaskModal :taskId="task.id" />
       </div>
     </div>
