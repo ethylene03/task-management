@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { addBoard } from '@/api/boards'
 import { getUsers } from '@/api/users'
-import { isError } from '@/helpers/utils'
+import { filterBoard, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import type { User } from '@/models/users'
 import { useAuthorizationStore } from '@/stores/authorization'
-import { onMounted, ref } from 'vue'
+import { useSocketStore } from '@/stores/socket'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 onMounted(() => {
@@ -45,6 +46,19 @@ async function createBoard() {
 
   router.back()
 }
+
+const socket = useSocketStore()
+watch(
+  () => socket.messages.length,
+  () => {
+    socket.messages.forEach((message) => {
+      if (message.type.includes('board')) {
+        filterBoard(message)
+      }
+    })
+  },
+  { deep: true },
+)
 </script>
 
 <template>

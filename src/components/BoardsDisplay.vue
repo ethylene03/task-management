@@ -35,9 +35,9 @@ async function fetchBoards() {
 const socket = useSocketStore()
 
 watch(
-  () => socket.messages,
-  (messages) => {
-    messages.forEach((message: Broadcast) => {
+  () => socket.messages.length,
+  () => {
+    socket.messages.forEach((message: Broadcast) => {
       if (message.type.includes('board')) {
         const newBoards = filterBoard(message)
         boards.value = newBoards

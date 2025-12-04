@@ -38,7 +38,6 @@ async function addMember(user: User) {
   if (isError(response)) return
 
   showMenu.value = false
-  router.go(0)
 }
 
 const route = useRoute()
@@ -110,7 +109,8 @@ watch(
 const auth = useAuthorizationStore()
 
 async function removeBoard() {
-  await deleteBoard(board.value.id!)
+  if (!board.value.id) return
+  await deleteBoard(board.value.id)
 
   router.back()
 }
@@ -146,6 +146,7 @@ function viewTask(taskId?: string) {
           type="text"
           id="name"
           class="form-control-plaintext fs-3 fw-bold"
+          :class="{'not-owner': !board.owner || board.owner.id !== auth.id}"
           v-model="board.name"
           :readonly="!board.owner || board.owner.id !== auth.id"
         />
@@ -157,11 +158,12 @@ function viewTask(taskId?: string) {
       <label for="description"><small>Description</small></label>
       <textarea
         id="description"
-        class="form-control bg-light border-dark"
+        class="form-control bg-light"
+        :class="{'border-dark': board.owner && board.owner.id === auth.id, 'not-owner': !board.owner || board.owner.id !== auth.id}"
         rows="4"
         style="resize: none; scroll-behavior: smooth"
         v-model="board.description"
-        placeholder="Enter description here..."
+        placeholder="No Description"
         :readonly="!board.owner || board.owner.id !== auth.id"
       ></textarea>
     </div>
@@ -228,3 +230,12 @@ function viewTask(taskId?: string) {
     </div>
   </section>
 </template>
+
+<style scoped>
+.not-owner {
+  border: none;
+  outline: 0;
+  box-shadow: none;
+  cursor: default;
+}
+</style>
