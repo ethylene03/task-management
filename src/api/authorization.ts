@@ -1,4 +1,4 @@
-import type { ApiError } from '@/models/error'
+import type { ApiError } from '@/models/global'
 import type { User, UserCredentials, UserToken } from '@/models/users'
 
 function getUrl(path: string = ''): string {

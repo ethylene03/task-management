@@ -1,4 +1,6 @@
 import type { Board } from '@/models/boards'
+import type { ApiError } from '@/models/global'
+import type { User } from '@/models/users'
 import { DELETE, fetchApi, GET, POST, PUT } from './base'
 import type { ApiError } from '@/models/error'
 import type { User } from '@/models/users'

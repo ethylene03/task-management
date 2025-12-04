@@ -1,4 +1,4 @@
-import type { ApiError } from '@/models/error'
+import type { ApiError } from '@/models/global'
 import type { Task } from '@/models/tasks'
 import { fetchApi, POST, PUT, DELETE, GET } from './base'
 

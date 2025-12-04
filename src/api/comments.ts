@@ -1,5 +1,5 @@
 import type { Comment } from '@/models/comments'
-import type { ApiError } from '@/models/error'
+import type { ApiError } from '@/models/global'
 import { fetchApi, POST } from './base'
 
 async function addComment(comment: Comment): Promise<Comment | ApiError> {

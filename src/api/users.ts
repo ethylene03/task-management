@@ -1,4 +1,4 @@
-import type { ApiError } from '@/models/error'
+import type { ApiError } from '@/models/global'
 import type { User } from '@/models/users'
 import { DELETE, fetchApi, GET, POST, PUT } from './base'
 

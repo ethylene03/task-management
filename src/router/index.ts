@@ -8,6 +8,7 @@ import LogIn from '@/views/authorization/LogIn.vue'
 import SignUp from '@/views/authorization/SignUp.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import TasksPage from '@/views/tasks/TasksPage.vue'
+import { useSocketStore } from '@/stores/socket'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthorizationStore()
+  const socket = useSocketStore()
 
   if (!auth.isLoggedIn()) {
     const newToken = await refreshToken()
@@ -42,6 +44,7 @@ router.beforeEach(async (to, from, next) => {
     else if (newToken) {
       auth.setToken(newToken.token)
       auth.setUserDetails(newToken)
+      socket.connect()
     }
   }
 
