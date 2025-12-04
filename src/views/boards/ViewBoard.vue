@@ -104,8 +104,9 @@ function viewTask(taskId?: string) {
 
 <template>
   <section id="board--view" class="section align-items-start">
-    <div class="my-4 d-flex gap-3 w-100">
-      <div class="flex-fill">
+
+    <div id="view-board--header" class="d-flex gap-3 w-100 align-items-center">
+      <div id="view-board--title" class="flex-fill">
         <label for="name" hidden>Name</label>
         <input
           type="text"
@@ -116,19 +117,21 @@ function viewTask(taskId?: string) {
       </div>
       <TrashIcon class="text-danger ms-3" style="width: 1.5rem; height: 1.5rem; cursor: pointer" @click="removeBoard" />
     </div>
-    <div class="mb-4 w-100">
+
+    <div id="view-board--description" class="w-100">
       <label for="description"><small>Description</small></label>
       <textarea
         id="description"
-        class="form-control-plaintext"
+        class="form-control"
         rows="4"
         style="resize: none; scroll-behavior: smooth"
         v-model="board.description"
         placeholder="Enter description here..."
       ></textarea>
     </div>
-    <small v-if="board.members?.length === 0" class="text-muted">No members assigned yet.</small>
-    <div v-else class="mt-2">
+
+    <small v-if="board.members?.length === 0" class="text-muted">-- No members assigned yet. --</small>
+    <div id="view-board--members" v-else class="mt-3">
       <p>Members:</p>
       <span
         v-for="member in board.members"
@@ -143,15 +146,14 @@ function viewTask(taskId?: string) {
       </span>
     </div>
 
-    <div class="d-flex flex-wrap gap-3 mt-4">
-      <div class="dropdown">
+    <div id="view-board--buttons" class="d-flex flex-wrap gap-3 mt-4">
+      <div id="view-board--add-member" class="dropdown">
         <button
           class="btn btn-outline-primary px-3"
           @click="showMenu = !showMenu"
         >
           Add Members
         </button>
-
         <ul class="dropdown-menu show" v-if="showMenu" style="display:block; position:absolute;">
           <li
             v-for="user in users"
@@ -165,7 +167,7 @@ function viewTask(taskId?: string) {
         </ul>
       </div>
 
-      <button class="btn btn-primary px-3" @click="addTask">Add New Task</button>
+      <button id="view-board--add-task" class="btn btn-primary px-3" @click="addTask">Add New Task</button>
     </div>
 
     <small: class="mt-3" :class="{ 'text-muted': isSaving, 'text-white': !isSaving }">{{
@@ -175,15 +177,15 @@ function viewTask(taskId?: string) {
     <div id="view-board--task" class="card w-100 p-2 p-md-5" style="max-height: 500px; overflow-y: auto">
       <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
 
-        <div v-else class="d-flex flex-wrap gap-3 justify-content-between">
-          <div v-for="(task, index) in tasks" :key="task.id" class="flex-fill">
-            <TaskCard
-              :task="task"
-              :board="board"
+      <div v-else class="d-flex flex-wrap gap-3 justify-content-between">
+        <div v-for="(task, index) in tasks" :key="task.id" class="flex-fill">
+          <TaskCard
+            :task="task"
+            :board="board"
             @delete="removeTask(task, index)"
-              @click="viewTask(task.id)"
-            />
-            <TaskModal :taskId="task.id" />
+            @click="viewTask(task.id)"
+          />
+          <TaskModal :taskId="task.id" />
         </div>
       </div>
     </div>

@@ -43,11 +43,11 @@ function removeTask(index: number) {
 
 <template>
   <section id="task--view-all" class="section">
-    <h2 class="my-4">Your Tasks</h2>
+    <h2>Your Tasks</h2>
     <p class="text-center text-md-start">Browse all your tasks from here.</p>
 
     <div
-      class="d-flex flex-wrap gap-4 mt-5 w-100 bg-white rounded-3 border p-5"
+      class="d-flex flex-wrap gap-4 mt-5 w-100 bg-white rounded-3 border p-3 p-md-5"
       :class="{
         'justify-content-center': tasks.length === 0,
         'justify-content-start': tasks.length > 0,

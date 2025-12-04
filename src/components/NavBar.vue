@@ -33,7 +33,7 @@ watch(
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg bg-white shadow-sm position-sticky top-0">
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm position-sticky top-0 z-1">
     <div class="container-fluid py-3 px-5">
       <h1 class="navbar-brand mb-0">Task Management</h1>
       <button
@@ -44,10 +44,11 @@ watch(
       >
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div
+        id="navbarNav"
         :class="[{ collapse: !isOpen }, 'navbar-collapse', { show: isOpen }]"
         class="ms-3 justify-content-between"
-        id="navbarNav"
       >
         <ul class="navbar-nav">
           <li class="nav-item">

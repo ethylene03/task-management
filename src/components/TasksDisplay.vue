@@ -43,16 +43,17 @@ function viewTask(id?: string) {
 
 <template>
   <div class="flex-fill col col-md-6">
-    <div>
+    <div id="tasks-display--header">
       <h4>Your Tasks</h4>
       <span class="text-muted">Total Tasks: {{ tasks.length || 0 }}</span>
     </div>
 
-    <div class="bg-white rounded-3 mt-3 border p-3 flex-fill">
+    <div id="tasks-display--body" class="bg-white rounded-3 mt-3 border p-3 flex-fill">
       <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
 
       <div v-else>
         <span
+          id="tasks-display--view-all"
           class="d-flex align-items-center text-primary fs-6 justify-content-end mb-3"
           @click="$router.push({ name: 'Tasks' })"
           style="cursor: pointer"
@@ -60,8 +61,9 @@ function viewTask(id?: string) {
           View All
           <ChevronRightIcon class="ms-2" style="width: 1rem; height: 1rem" />
         </span>
-        <div class="d-flex flex-column gap-3">
-          <div v-for="task in tasks" :key="task.id">
+
+        <div id="tasks-display--task-cards" class="d-flex flex-column gap-3">
+          <template v-for="task in tasks" :key="task.id">
             <div class="w-100 card h-100 shadow-sm cursor-pointer" @click="viewTask(task.id)">
               <div class="card-body">
                 <h5 class="card-title text-primary">{{ task.name || 'Task' }}</h5>
@@ -74,7 +76,7 @@ function viewTask(id?: string) {
               </div>
             </div>
             <TaskModal :taskId="task.id" />
-          </div>
+          </template>
         </div>
       </div>
     </div>

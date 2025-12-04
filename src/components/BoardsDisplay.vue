@@ -24,7 +24,7 @@ async function fetchBoards() {
 
 <template>
   <div class="flex-fill col col-md-6">
-    <div class="d-flex align-items-center justify-content-between">
+    <div id="boards-display--header" class="d-flex align-items-center justify-content-between">
       <div>
         <h4>Your Boards</h4>
         <span class="text-muted">Total Boards: {{ total || 0 }}</span>
@@ -38,11 +38,12 @@ async function fetchBoards() {
       </button>
     </div>
 
-    <div class="bg-white rounded-3 mt-3 border p-3 flex-fill">
+    <div id="boards-display--body" class="bg-white rounded-3 mt-3 border p-3 flex-fill">
       <NoData v-if="boards.length === 0" message="You have no boards yet." />
 
       <div v-else>
         <span
+          id="boards-display--view-all"
           class="d-flex align-items-center text-primary fs-6 justify-content-end mb-3"
           @click="$router.push({ name: 'Boards' })"
           style="cursor: pointer"

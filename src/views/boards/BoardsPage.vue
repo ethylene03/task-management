@@ -22,8 +22,8 @@ async function fetchBoards() {
 
 <template>
   <section id="board--view-all" class="section">
-    <h2 class="my-4">Your Boards</h2>
-    <p class="text-center text-md-start">Browse all your boards from here.</p>
+    <h2>Your Boards</h2>
+    <p class="text-center text-md-start mb-4">Browse all your boards from here.</p>
 
     <router-link to="/boards/create" class="btn btn-primary"> Create New Board </router-link>
 

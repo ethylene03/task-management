@@ -49,11 +49,11 @@ async function createBoard() {
 
 <template>
   <section id="board--create" class="section">
-    <h2 class="my-4">Create New Board</h2>
+    <h2>Create New Board</h2>
     <p class="text-center text-md-start">Set up a new board to manage your tasks effectively.</p>
     <p class="text-danger" v-if="errorMessage">Error: {{ errorMessage }}</p>
 
-    <form class="mt-5 w-100 card p-5" @submit.prevent="createBoard">
+    <form class="mt-2 w-100 card p-3 p-md-5" @submit.prevent="createBoard">
       <div class="mb-3">
         <label for="name" class="form-label">
           Board Name
