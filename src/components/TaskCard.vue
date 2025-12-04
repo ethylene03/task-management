@@ -145,7 +145,7 @@ function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
     <div id="task-card--description" class="mb-2">
       <label for="description" class="form-text" hidden>Description</label>
       <textarea
-        class="form-control-plaintext mb-2"
+        class="form-control mb-2"
         v-model="taskCopy.description"
         placeholder="Task Description"
         rows="3"

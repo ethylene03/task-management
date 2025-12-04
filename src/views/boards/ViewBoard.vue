@@ -122,7 +122,7 @@ function viewTask(taskId?: string) {
       <label for="description"><small>Description</small></label>
       <textarea
         id="description"
-        class="form-control"
+        class="form-control bg-light border-dark"
         rows="4"
         style="resize: none; scroll-behavior: smooth"
         v-model="board.description"

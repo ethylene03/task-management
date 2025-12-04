@@ -87,7 +87,7 @@ async function submitComment() {
             id="task-modal--assignee"
             class="badge border border-1 mb-2 me-3 bg-primary-subtle text-primary"
           >
-            @{{ task.assignee?.username }}
+            {{ task.assignee?.username ? '@' + task.assignee.username : 'Unassigned' }}
           </span>
 
           <div id="task-modal--description" class="mb-3">
