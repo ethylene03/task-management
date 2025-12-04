@@ -4,14 +4,19 @@ import { getUsers } from '@/api/users'
 import NoData from '@/components/NoData.vue'
 import TaskCard from '@/components/TaskCard.vue'
 import TaskModal from '@/components/TaskModal.vue'
-import { debounce, isError } from '@/helpers/utils'
+import { debounce, filterBoard, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
+import type { Broadcast } from '@/models/global'
 import type { Task } from '@/models/tasks'
 import type { User } from '@/models/users'
+import { useAuthorizationStore } from '@/stores/authorization'
+import { useSocketStore } from '@/stores/socket'
 import { TrashIcon } from '@heroicons/vue/24/solid'
 import { Modal } from 'bootstrap'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+const isInitialLoad = ref(true)
 
 onMounted(() => {
   fetchBoard()
@@ -51,15 +56,37 @@ async function fetchBoard() {
   tasks.value.push(...(response.tasks || []))
 }
 
+const fromSocket = ref(false)
+const socket = useSocketStore()
+watch(
+  () => socket.messages.length,
+  () => {
+    console.log("triggered")
+    socket.messages.forEach(async (message: Broadcast) => {
+      if (message.type.includes('board')) {
+        const boards = filterBoard(message)
+        if(boards.find(b => b.id === board.value.id)) {
+          fromSocket.value = true;
+          board.value = boards.find(b => b.id === board.value.id)!;
+
+          setTimeout(() => {
+            console.log('reset fromSocket');
+            fromSocket.value = false;
+          }, 50);
+        } else router.back()
+      }
+    })
+  },
+  { deep: true },
+)
+
 const debouncedSave = ref<(() => void) | null>(null)
 const saveController = ref<AbortController | null>(null)
 async function submitBoard() {
   if (saveController.value) saveController.value.abort()
   saveController.value = new AbortController()
 
-  const response = await updateBoard(board.value, saveController.value?.signal)
-  if (isError(response)) return
-
+  await updateBoard(board.value, saveController.value?.signal)
   isSaving.value = false
 }
 
@@ -67,13 +94,20 @@ const isSaving = ref(false)
 watch(
   () => board.value,
   () => {
-    isSaving.value = true
-    if (debouncedSave.value) {
-      debouncedSave.value?.()
+    console.log(fromSocket.value);
+    if(fromSocket.value) return;
+    if (isInitialLoad.value) {
+      isInitialLoad.value = false;
+      return;
     }
+
+    isSaving.value = true
+    debouncedSave.value?.()
   },
   { deep: true },
 )
+
+const auth = useAuthorizationStore()
 
 async function removeBoard() {
   await deleteBoard(board.value.id!)
@@ -115,7 +149,7 @@ function viewTask(taskId?: string) {
           v-model="board.name"
         />
       </div>
-      <TrashIcon class="text-danger ms-3" style="width: 1.5rem; height: 1.5rem; cursor: pointer" @click="removeBoard" />
+      <TrashIcon v-if="board.owner?.id === auth.id" class="text-danger ms-3" style="width: 1.5rem; height: 1.5rem; cursor: pointer" @click="removeBoard" />
     </div>
 
     <div id="view-board--description" class="w-100">
@@ -127,6 +161,7 @@ function viewTask(taskId?: string) {
         style="resize: none; scroll-behavior: smooth"
         v-model="board.description"
         placeholder="Enter description here..."
+        :readonly="board.owner?.id !== auth.id"
       ></textarea>
     </div>
 

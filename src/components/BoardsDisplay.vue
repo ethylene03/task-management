@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { getBoards } from '@/api/boards'
-import { isError } from '@/helpers/utils'
+import { filterBoard, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
+import type { Broadcast } from '@/models/global'
+import { useDataStore } from '@/stores/data'
+import { useSocketStore } from '@/stores/socket'
 import { ChevronRightIcon, PlusIcon } from '@heroicons/vue/24/solid'
-import { onMounted, ref } from 'vue'
-import NoData from './NoData.vue'
+import { onMounted, ref, watch } from 'vue'
 import BoardCard from './BoardCard.vue'
+import NoData from './NoData.vue'
 
 onMounted(() => {
   fetchBoards()
@@ -14,12 +17,36 @@ onMounted(() => {
 const boards = ref<Board[]>([])
 const total = ref(0)
 async function fetchBoards() {
+  const dataStore = useDataStore()
+  if (dataStore.boards.length > 0) {
+    boards.value = dataStore.boards
+    total.value = dataStore.boards.length
+    return
+  }
+
   const response = await getBoards()
   if (isError(response)) return
 
   total.value = response.length
-  boards.value = response.slice(0, 3)
+  boards.value = response
+  dataStore.boards = response
 }
+
+const socket = useSocketStore()
+
+watch(
+  () => socket.messages,
+  (messages) => {
+    messages.forEach((message: Broadcast) => {
+      if (message.type.includes('board')) {
+        const newBoards = filterBoard(message)
+        boards.value = newBoards
+        total.value = newBoards.length
+      }
+    })
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -53,7 +80,7 @@ async function fetchBoards() {
         </span>
 
         <div id="boards-display--board-cards" class="d-flex flex-column gap-3">
-          <BoardCard v-for="board in boards" :key="board.id" :board="board" />
+          <BoardCard v-for="board in boards.slice(0, 3)" :key="board.id" :board="board" />
         </div>
       </div>
     </div>

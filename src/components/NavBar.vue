@@ -4,6 +4,8 @@ import { useAuthorizationStore } from '@/stores/authorization'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/vue/24/solid'
+import { useSocketStore } from '@/stores/socket'
+import { useDataStore } from '@/stores/data'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,8 +14,14 @@ async function logoutUser() {
   await logout()
 
   const auth = useAuthorizationStore()
-  auth.clearToken()
-  auth.clearUserDetails()
+  auth.$reset()
+
+  const socket = useSocketStore()
+  socket.disconnect()
+  socket.$reset()
+
+  const dataStore = useDataStore()
+  dataStore.$reset()
 
   router.push({ name: 'Login' })
 }

@@ -4,11 +4,14 @@ import { getTasks } from '@/api/tasks'
 import NoData from '@/components/NoData.vue'
 import TaskCard from '@/components/TaskCard.vue'
 import TaskModal from '@/components/TaskModal.vue'
-import { isError } from '@/helpers/utils'
+import { filterTask, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
+import type { Broadcast } from '@/models/global'
 import type { TaskWithBoard } from '@/models/tasks'
+import { useDataStore } from '@/stores/data'
+import { useSocketStore } from '@/stores/socket'
 import { Modal } from 'bootstrap'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 onMounted(() => {
   fetchTasks()
@@ -17,6 +20,12 @@ onMounted(() => {
 const tasks = ref<TaskWithBoard[]>([])
 
 async function fetchTasks() {
+  const dataStore = useDataStore()
+  if (dataStore.tasks.length > 0) {
+    tasks.value = dataStore.tasks
+    return
+  }
+
   const response = await getTasks()
   if (isError(response)) return
 
@@ -26,7 +35,22 @@ async function fetchTasks() {
       return { ...task, board: isError(boardResponse) ? ({} as Board) : boardResponse }
     }),
   )
+  dataStore.tasks = tasks.value
 }
+
+const socket = useSocketStore()
+watch(
+  () => socket.messages,
+  (messages) => {
+    messages.forEach(async (message: Broadcast) => {
+      if (message.type.includes('task')) {
+        const newTasks = await filterTask(message)
+        tasks.value = newTasks
+      }
+    })
+  },
+  { deep: true },
+)
 
 function viewTask(id?: string) {
   const modal = document.getElementById('modal--view-' + id)

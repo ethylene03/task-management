@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { addTask, deleteTask, updateTask } from '@/api/tasks'
-import { debounce, isError } from '@/helpers/utils'
+import { debounce, filterTask, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import type { Task, TaskWithBoard } from '@/models/tasks'
+import { useSocketStore } from '@/stores/socket'
 import { TrashIcon } from '@heroicons/vue/24/solid'
 import { Modal } from 'bootstrap'
 import { onMounted, ref, watch } from 'vue'
@@ -21,10 +22,10 @@ const isSaving = ref(false)
 watch(
   () => taskCopy.value,
   () => {
+    if(fromSocket.value) return;
+
     isSaving.value = true
-    if (debouncedSave.value) {
-      debouncedSave.value?.()
-    }
+    debouncedSave.value?.()
   },
   { deep: true },
 )
@@ -86,6 +87,30 @@ function setStatus(status: 'To-Do' | 'Ongoing' | 'Done') {
   taskCopy.value.status = status
   showMenu.value = false
 }
+
+const fromSocket = ref(false)
+const socket = useSocketStore()
+watch(
+  () => socket.messages.length,
+  () => {
+    socket.messages.forEach(async (message) => {
+      if (message.type.includes('task')) {
+        const tasks = await filterTask(message)
+        const updatedTask = tasks.find((t) => t.id === taskCopy.value.id)
+
+        if (updatedTask) {
+          fromSocket.value = true;
+          taskCopy.value = updatedTask
+
+          setTimeout(() => {
+            fromSocket.value = false;
+          }, 50);
+        }
+      }
+    })
+  },
+  { deep: true },
+)
 </script>
 
 <template>

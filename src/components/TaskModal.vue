@@ -2,13 +2,15 @@
 import { getBoard } from '@/api/boards'
 import { addComment } from '@/api/comments'
 import { getTask } from '@/api/tasks'
-import { isError } from '@/helpers/utils'
+import { filterComment, filterTask, isError } from '@/helpers/utils'
 import type { Comment } from '@/models/comments'
 import type { TaskWithBoard } from '@/models/tasks'
 import type { User } from '@/models/users'
 import { useAuthorizationStore } from '@/stores/authorization'
+import { useDataStore } from '@/stores/data'
+import { useSocketStore } from '@/stores/socket'
 import { UserCircleIcon } from '@heroicons/vue/24/solid'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 onMounted(() => {
   fetchUser()
@@ -28,6 +30,13 @@ const task = ref<TaskWithBoard>({} as TaskWithBoard)
 async function fetchTask() {
   if (!taskId) return
 
+  const dataStore = useDataStore()
+  const storedTask = dataStore.tasks.find((t) => t.id === taskId)
+  if (storedTask) {
+    task.value = storedTask
+    return
+  }
+
   const response = await getTask(taskId)
   if (isError(response)) return
 
@@ -36,6 +45,28 @@ async function fetchTask() {
 
   task.value = { ...response, board: board }
 }
+
+const socket = useSocketStore()
+
+watch(
+  () => socket.messages,
+  (messages) => {
+    messages.forEach(async (message) => {
+      if (message.type.includes('task')) {
+        const tasks = await filterTask(message)
+        const updatedTask = tasks.find((t) => t.id === task.value.id)
+
+        if (updatedTask) task.value = updatedTask
+      }
+
+      if (message.type.includes('comment')) {
+        const comments = filterComment(task.value.comments || [], message)
+        task.value.comments = comments
+      }
+    })
+  },
+  { deep: true },
+)
 
 async function submitComment() {
   if (!comment.value.trim()) return

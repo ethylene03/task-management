@@ -2,9 +2,12 @@
 import { getBoards } from '@/api/boards'
 import BoardCard from '@/components/BoardCard.vue'
 import NoData from '@/components/NoData.vue'
-import { isError } from '@/helpers/utils'
+import { filterBoard, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
-import { onMounted, ref } from 'vue'
+import type { Broadcast } from '@/models/global'
+import { useDataStore } from '@/stores/data'
+import { useSocketStore } from '@/stores/socket'
+import { onMounted, ref, watch } from 'vue'
 
 onMounted(() => {
   fetchBoards()
@@ -13,11 +16,32 @@ onMounted(() => {
 const boards = ref<Board[]>([])
 
 async function fetchBoards() {
+  const dataStore = useDataStore()
+  if (dataStore.boards.length > 0) {
+    boards.value = dataStore.boards
+    return
+  }
+
   const response = await getBoards()
   if (isError(response)) return
 
   boards.value = response
+  dataStore.boards = response
 }
+
+const socket = useSocketStore()
+watch(
+  () => socket.messages,
+  (messages) => {
+    messages.forEach((message: Broadcast) => {
+      if (message.type.includes('board')) {
+        const newBoards = filterBoard(message)
+        boards.value = newBoards
+      }
+    })
+  },
+  { deep: true },
+)
 </script>
 
 <template>

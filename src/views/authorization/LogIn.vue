@@ -2,6 +2,7 @@
 import { login } from '@/api/authorization'
 import { isError } from '@/helpers/utils'
 import { useAuthorizationStore } from '@/stores/authorization'
+import { useSocketStore } from '@/stores/socket'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -22,8 +23,10 @@ async function handleLogin() {
   }
 
   const auth = useAuthorizationStore()
+  const socket = useSocketStore()
   auth.setToken(response.token)
   auth.setUserDetails(response)
+  socket.connect()
 
   router.push({ name: 'Home' })
 }
