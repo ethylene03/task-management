@@ -3,7 +3,7 @@ import { deleteBoard, getBoard, inviteMember, updateBoard } from '@/api/boards'
 import { getUsers } from '@/api/users'
 import NoData from '@/components/NoData.vue'
 import TaskCard from '@/components/TaskCard.vue'
-import ViewTask from '@/components/ViewTask.vue'
+import TaskModal from '@/components/TaskModal.vue'
 import { debounce, isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import type { Task } from '@/models/tasks'
@@ -182,7 +182,7 @@ function viewTask(taskId?: string) {
               @delete="removeTask(index)"
               @click="viewTask(task.id)"
             />
-            <ViewTask :taskId="task.id" />
+            <TaskModal :taskId="task.id" />
           </div>
       <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
         </div>

@@ -8,6 +8,7 @@ import { ChevronRightIcon } from '@heroicons/vue/24/solid'
 import { onMounted, ref } from 'vue'
 import ViewTask from './ViewTask.vue'
 import { Modal } from 'bootstrap'
+import TaskModal from './TaskModal.vue'
 import NoData from './NoData.vue'
 
 onMounted(() => {
@@ -73,7 +74,7 @@ function viewTask(id?: string) {
                 </div>
               </div>
             </div>
-            <ViewTask :taskId="task.id" />
+            <TaskModal :taskId="task.id" />
           </div>
         </div>
       </div>

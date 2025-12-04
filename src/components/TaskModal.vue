@@ -26,7 +26,9 @@ function fetchUser() {
 
 const task = ref<TaskWithBoard>({} as TaskWithBoard)
 async function fetchTask() {
-  const response = await getTask(taskId || '')
+  if (!taskId) return
+
+  const response = await getTask(taskId)
   if (isError(response)) return
 
   const board = await getBoard(response.board as string)
@@ -55,7 +57,7 @@ async function submitComment() {
   <div class="modal fade" :id="'modal--view-' + task.id" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header border-bottom-0 px-4">
+        <div id="task-modal--header" class="modal-header border-bottom-0 px-4">
           <div>
             <h1 class="modal-title fs-5">{{ task.name || 'Task' }}</h1>
             <small class="text-muted">{{ task.board?.name }}</small>
@@ -67,8 +69,10 @@ async function submitComment() {
             aria-label="Close"
           ></button>
         </div>
-        <div class="modal-body pb-4 pt-0">
+
+        <div id="task-modal--content" class="modal-body pb-4 pt-0">
           <span
+            id="task-modal--status"
             class="badge border border-1 mb-2 me-3"
             :class="{
               'bg-warning-subtle text-warning': task.status === 'To-Do',
@@ -78,18 +82,23 @@ async function submitComment() {
           >
             {{ task.status }}
           </span>
-          <span class="badge border border-1 mb-2 me-3 bg-primary-subtle text-primary">
+
+          <span
+            id="task-modal--assignee"
+            class="badge border border-1 mb-2 me-3 bg-primary-subtle text-primary"
+          >
             @{{ task.assignee?.username }}
           </span>
-          <div class="mb-3">
+
+          <div id="task-modal--description" class="mb-3">
             <small class="text-muted">Description</small>
             <p class="w-100 px-3 py-2" style="max-height: 10rem; overflow-y: auto">
               {{ task.description || 'No Description' }}
             </p>
           </div>
 
-          <div class="mb-3 mt-5">
-            <div class="mb-3 d-flex flex-row gap-3 align-items-end">
+          <div id="task-modal--comments" class="mb-3 mt-5">
+            <div id="task-modal--add-comment" class="mb-3 d-flex flex-row gap-3 align-items-end">
               <UserCircleIcon style="width: 2.25rem; height: 2.25rem" />
               <div class="flex-fill">
                 <small for="comment" class="form-label">{{ user.name }}</small>
@@ -104,14 +113,22 @@ async function submitComment() {
             </div>
 
             <div
+              id="task-modal--comments-list"
               class="card p-3 d-flex flex-column gap-3"
-              style="max-height: 400px; overflow-y: auto"
+              style="max-height: 300px; overflow-y: auto"
             >
               <small class="text-muted">Comments</small>
-              <span v-if="task.comments?.length === 0" class="text-muted text-center">
-                No comments yet.
+
+              <span
+                id="task-modal--no-comment"
+                v-if="task.comments?.length === 0"
+                class="text-muted text-center"
+              >
+                -- no comments yet --
               </span>
+
               <div
+                id="task-modal--comment"
                 v-else
                 v-for="comm in task.comments"
                 :key="comm.id"

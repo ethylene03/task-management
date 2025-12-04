@@ -3,6 +3,7 @@ import { getBoard } from '@/api/boards'
 import { getTasks } from '@/api/tasks'
 import ViewTask from '@/components/ViewTask.vue'
 import NoData from '@/components/NoData.vue'
+import TaskModal from '@/components/TaskModal.vue'
 import { isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import type { TaskWithBoard } from '@/models/tasks'
@@ -66,7 +67,7 @@ function viewTask(id?: string) {
             </p>
           </div>
         </div>
-        <ViewTask :taskId="task.id" />
+        <TaskModal :taskId="task.id" />
       </div>
     </div>
   </section>
