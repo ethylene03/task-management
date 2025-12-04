@@ -56,7 +56,7 @@ watch(
       class="mt-5 bg-white rounded-3 border p-3 p-md-5 w-100"
       :class="{
         'justify-content-center': boards.length === 0,
-        'justify-content-start': boards.length > 0,
+        'justify-content-start grid-cards': boards.length > 0,
       }"
       style="max-height: 500px; overflow-y: auto"
     >
@@ -67,7 +67,7 @@ watch(
 </template>
 
 <style scoped>
-#board--cards-container {
+.grid-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
