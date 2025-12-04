@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getBoards } from '@/api/boards'
+import BoardCard from '@/components/BoardCard.vue'
 import NoData from '@/components/NoData.vue'
 import { isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
@@ -27,39 +28,27 @@ async function fetchBoards() {
     <router-link to="/boards/create" class="btn btn-primary"> Create New Board </router-link>
 
     <div
-      class="d-flex flex-wrap gap-4 mt-5 w-100 bg-white rounded-3 border p-5"
+      id="board--cards-container"
+      class="mt-5 bg-white rounded-3 border p-3 p-md-5 w-100"
       :class="{
         'justify-content-center': boards.length === 0,
         'justify-content-start': boards.length > 0,
       }"
       style="max-height: 500px; overflow-y: auto"
     >
-
-      <div v-else v-for="board in boards" :key="board.id" class="flex-fill" style="max-width: 18rem">
-        <router-link
-          :to="{ name: 'View Board', params: { id: board.id } }"
-          class="text-decoration-none"
-        >
-          <div class="card h-100 shadow-sm board--card" style="min-width: 18rem">
-            <div class="card-body">
-              <h5 class="card-title text-primary">{{ board.name }}</h5>
-              <p class="card-text text-truncate">
-                {{ board.description }}
-              </p>
-              <div class="d-flex flex-column">
-                <small class="text-secondary"> Members: {{ board.members?.length || 0 }} </small>
-                <small class="text-secondary"> Tasks: {{ board.tasks.length }} </small>
-              </div>
-            </div>
-          </div>
-        </router-link>
-      </div>
       <NoData v-if="boards.length === 0" message="You have no boards yet." />
+      <BoardCard v-else v-for="board in boards" :key="board.id" :board="board" />
     </div>
   </section>
 </template>
 
 <style scoped>
+#board--cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
 .board--card:hover {
   background-color: var(--bs-light);
 }

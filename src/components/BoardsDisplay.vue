@@ -5,6 +5,7 @@ import type { Board } from '@/models/boards'
 import { ChevronRightIcon, PlusIcon } from '@heroicons/vue/24/solid'
 import { onMounted, ref } from 'vue'
 import NoData from './NoData.vue'
+import BoardCard from './BoardCard.vue'
 
 onMounted(() => {
   fetchBoards()
@@ -49,28 +50,9 @@ async function fetchBoards() {
           View All
           <ChevronRightIcon class="ms-2" style="width: 1rem; height: 1rem" />
         </span>
-        <div class="d-flex flex-column gap-3">
-          <template v-for="board in boards" :key="board.id">
-            <router-link
-              :to="{ name: 'View Board', params: { id: board.id } }"
-              class="text-decoration-none w-100 d-block"
-            >
-              <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                  <h5 class="card-title text-primary">{{ board.name }}</h5>
-                  <p class="card-text text-truncate">
-                    {{ board.description }}
-                  </p>
-                  <div class="d-flex flex-column">
-                    <small class="text-secondary">
-                      Members: {{ board.members?.length || 0 }}
-                    </small>
-                    <small class="text-secondary"> Tasks: {{ board.tasks.length }} </small>
-                  </div>
-                </div>
-              </div>
-            </router-link>
-          </template>
+
+        <div id="boards-display--board-cards" class="d-flex flex-column gap-3">
+          <BoardCard v-for="board in boards" :key="board.id" :board="board" />
         </div>
       </div>
     </div>
