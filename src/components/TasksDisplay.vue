@@ -8,6 +8,7 @@ import { ChevronRightIcon } from '@heroicons/vue/24/solid'
 import { onMounted, ref } from 'vue'
 import ViewTask from './ViewTask.vue'
 import { Modal } from 'bootstrap'
+import NoData from './NoData.vue'
 
 onMounted(() => {
   fetchTasks()
@@ -48,10 +49,7 @@ function viewTask(id?: string) {
     </div>
 
     <div class="bg-white rounded-3 mt-3 border p-3 flex-fill">
-      <div v-if="tasks.length === 0" class="text-center">
-        <img src="@/helpers/no-data.avif" alt="No Tasks" class="mb-4" style="max-width: 300px" />
-        <p class="mb-3">You have no tasks yet.</p>
-      </div>
+      <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
 
       <div v-else>
         <span

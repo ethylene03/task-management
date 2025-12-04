@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getBoards } from '@/api/boards'
+import NoData from '@/components/NoData.vue'
 import { isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import { onMounted, ref } from 'vue'
@@ -33,10 +34,6 @@ async function fetchBoards() {
       }"
       style="max-height: 500px; overflow-y: auto"
     >
-      <div v-if="boards.length === 0" class="text-center">
-        <img src="@/helpers/no-data.avif" alt="No Boards" class="mb-4" style="max-width: 300px" />
-        <p class="mb-3">You have no boards yet.</p>
-      </div>
 
       <div v-else v-for="board in boards" :key="board.id" class="flex-fill" style="max-width: 18rem">
         <router-link
@@ -57,6 +54,7 @@ async function fetchBoards() {
           </div>
         </router-link>
       </div>
+      <NoData v-if="boards.length === 0" message="You have no boards yet." />
     </div>
   </section>
 </template>

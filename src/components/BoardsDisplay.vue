@@ -4,6 +4,7 @@ import { isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import { ChevronRightIcon, PlusIcon } from '@heroicons/vue/24/solid'
 import { onMounted, ref } from 'vue'
+import NoData from './NoData.vue'
 
 onMounted(() => {
   fetchBoards()
@@ -37,10 +38,7 @@ async function fetchBoards() {
     </div>
 
     <div class="bg-white rounded-3 mt-3 border p-3 flex-fill">
-      <div v-if="boards.length === 0" class="text-center">
-        <img src="@/helpers/no-data.avif" alt="No Boards" class="mb-4" style="max-width: 300px" />
-        <p class="mb-3">You have no boards yet.</p>
-      </div>
+      <NoData v-if="boards.length === 0" message="You have no boards yet." />
 
       <div v-else>
         <span

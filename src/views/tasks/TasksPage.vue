@@ -2,6 +2,7 @@
 import { getBoard } from '@/api/boards'
 import { getTasks } from '@/api/tasks'
 import ViewTask from '@/components/ViewTask.vue'
+import NoData from '@/components/NoData.vue'
 import { isError } from '@/helpers/utils'
 import type { Board } from '@/models/boards'
 import type { TaskWithBoard } from '@/models/tasks'
@@ -48,10 +49,7 @@ function viewTask(id?: string) {
       }"
       style="max-height: 500px; overflow-y: auto"
     >
-      <div v-if="tasks.length === 0" class="text-center">
-        <img src="@/helpers/no-data.avif" alt="No Tasks" class="mb-4" style="max-width: 300px" />
-        <p class="mb-3">You have no tasks yet.</p>
-      </div>
+      <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
 
       <div v-else v-for="task in tasks" :key="task.id" class="flex-fill" style="max-width: 18rem">
         <div

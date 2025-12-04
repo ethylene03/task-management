@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { deleteBoard, getBoard, inviteMember, updateBoard } from '@/api/boards'
 import { getUsers } from '@/api/users'
+import NoData from '@/components/NoData.vue'
 import TaskCard from '@/components/TaskCard.vue'
 import ViewTask from '@/components/ViewTask.vue'
 import { debounce, isError } from '@/helpers/utils'
@@ -172,10 +173,6 @@ function viewTask(taskId?: string) {
 
     <div class="card w-100 p-2 p-md-5" style="max-height: 500px; overflow-y: auto">
       <div class="card-body">
-        <div v-if="tasks.length === 0" class="text-center">
-          <img src="@/helpers/no-data.avif" alt="No Tasks" class="mb-4" style="max-width: 300px" />
-          <p class="mb-3">You have no tasks yet.</p>
-        </div>
 
         <div v-else class="d-flex flex-wrap gap-3 justify-content-between">
           <div v-for="(task, index) in tasks" :key="task.id" class="flex-fill">
@@ -187,6 +184,7 @@ function viewTask(taskId?: string) {
             />
             <ViewTask :taskId="task.id" />
           </div>
+      <NoData v-if="tasks.length === 0" message="You have no tasks yet." />
         </div>
       </div>
     </div>
