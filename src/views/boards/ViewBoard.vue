@@ -147,6 +147,7 @@ function viewTask(taskId?: string) {
           id="name"
           class="form-control-plaintext fs-3 fw-bold"
           v-model="board.name"
+          :readonly="!board.owner || board.owner.id !== auth.id"
         />
       </div>
       <TrashIcon v-if="board.owner?.id === auth.id" class="text-danger ms-3" style="width: 1.5rem; height: 1.5rem; cursor: pointer" @click="removeBoard" />
@@ -161,7 +162,7 @@ function viewTask(taskId?: string) {
         style="resize: none; scroll-behavior: smooth"
         v-model="board.description"
         placeholder="Enter description here..."
-        :readonly="board.owner?.id !== auth.id"
+        :readonly="!board.owner || board.owner.id !== auth.id"
       ></textarea>
     </div>
 
@@ -186,6 +187,7 @@ function viewTask(taskId?: string) {
         <button
           class="btn btn-outline-primary px-3"
           @click="showMenu = !showMenu"
+          :disabled="!board.owner || board.owner.id !== auth.id"
         >
           Add Members
         </button>
@@ -205,7 +207,7 @@ function viewTask(taskId?: string) {
       <button id="view-board--add-task" class="btn btn-primary px-3" @click="addTask">Add New Task</button>
     </div>
 
-    <small: class="mt-3" :class="{ 'text-muted': isSaving, 'text-white': !isSaving }">{{
+    <small: class="mt-3" :class="{ 'text-muted': isSaving, 'text-light': !isSaving }">{{
       isSaving ? 'Saving changes..' : 'Saved!'
     }}</small:>
 
