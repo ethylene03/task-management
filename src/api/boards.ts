@@ -2,8 +2,6 @@ import type { Board } from '@/models/boards'
 import type { ApiError } from '@/models/global'
 import type { User } from '@/models/users'
 import { DELETE, fetchApi, GET, POST, PUT } from './base'
-import type { ApiError } from '@/models/error'
-import type { User } from '@/models/users'
 
 async function addBoard(board: Board): Promise<Board | ApiError> {
   try {
@@ -93,4 +91,5 @@ async function deleteBoard(id: string): Promise<void | ApiError> {
   }
 }
 
-export { addBoard, getBoards, getBoard, updateBoard, inviteMember, deleteBoard }
+export { addBoard, deleteBoard, getBoard, getBoards, inviteMember, updateBoard }
+

@@ -1,6 +1,6 @@
 import type { ApiError } from '@/models/global'
 import type { Task } from '@/models/tasks'
-import { fetchApi, POST, PUT, DELETE, GET } from './base'
+import { DELETE, fetchApi, GET, POST, PUT } from './base'
 
 async function addTask(task: Task, signal: AbortSignal): Promise<Task | ApiError> {
   try {
@@ -75,4 +75,5 @@ async function deleteTask(id: string): Promise<void | ApiError> {
   }
 }
 
-export { addTask, getTasks, getTask, updateTask, deleteTask }
+export { addTask, deleteTask, getTask, getTasks, updateTask }
+

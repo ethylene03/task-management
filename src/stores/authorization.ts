@@ -12,9 +12,6 @@ export const useAuthorizationStore = defineStore('authorization', {
     setToken(newToken: string) {
       this.token = newToken
     },
-    clearToken() {
-      this.token = ''
-    },
     isLoggedIn(): boolean {
       return this.token !== ''
     },
@@ -22,11 +19,6 @@ export const useAuthorizationStore = defineStore('authorization', {
       this.id = response.id
       this.name = response.name
       this.username = response.username
-    },
-    clearUserDetails() {
-      this.id = ''
-      this.name = ''
-      this.username = ''
     },
     getUserDetails() {
       return { id: this.id, name: this.name, username: this.username } as User
